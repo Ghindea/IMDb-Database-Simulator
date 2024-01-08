@@ -133,6 +133,9 @@ public abstract class Production extends Observable implements Comparable<Produc
     public void addGenre(Genre g) {
         genres.add(g);
     }
+    public void addRating(Rating r) {
+        ratings.add(r);
+    }
     public Production clone(Production p) {
         Production clone = ProductionFactory.buildProduction(p.getType())
                 .setActorsNames(p.getActorsNames())

@@ -447,8 +447,35 @@ public class Parser {
     public static void solveDiscrepancies() {
         for (User u : IMDB.getInstance().getUsers()) {
             if (u instanceof Staff && !((Staff) u).getContributions().isEmpty()) {
-                
+                for (String contribution : ((Staff) u).getContributions()) {
+                    addPageObserver(u, contribution);
+                }
             }
+            if (!u.getFavorites().isEmpty()) {
+                for (String favorite : u.getFavorites()) {
+                    addPageObserver(u, favorite);
+                }
+            }
+        }
+        for (Request r : IMDB.getInstance().getRequests()) {
+            User from = IMDB.getInstance().containsUser(r.getFromUserName());
+            if (from instanceof RequestManager) {
+                ((RequestManager) from).createRequest(r);
+            }
+        }
+    }
+    private static void addPageObserver(User u, String page) {
+        if (IMDB.getInstance().getProduction(page) != null) {
+            Production p = IMDB.getInstance().getProduction(page);
+            int index = IMDB.getInstance().getProductions().indexOf(p);
+            p.addObserver(u);
+            IMDB.getInstance().getProductions().set(index, p);
+        }
+        if (IMDB.getInstance().getActor(page) != null) {
+            Actor a = IMDB.getInstance().getActor(page);
+            int index = IMDB.getInstance().getActors().indexOf(a);
+            a.addObserver(u);
+            IMDB.getInstance().getActors().set(index,a);
         }
     }
     //endregion

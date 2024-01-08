@@ -262,4 +262,16 @@ public abstract class User implements Observer, Comparable<Object>  {
     public void update(String msg) {
         notifications.add(msg);
     }
+    public List<Request> ownedRequests() {
+        List<Request> ownedRequests = new ArrayList<>();
+        for (Request r : RequestHolder.globalRequests) {
+            if (r.getFromUserName().equals(this.getUserName()))
+                ownedRequests.add(r);
+        }
+        for (Request r : RequestHolder.requestsForAdmins) {
+            if (r.getFromUserName().equals(this.getUserName()))
+                ownedRequests.add(r);
+        }
+        return ownedRequests;
+    }
 }

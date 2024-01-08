@@ -83,17 +83,22 @@ public class IMDB {
     }
 
     private void runAdminMode(Admin loggedAdmin) throws InvalidCommandException {
-        String menuText = Actions.ANSI_LIGHT_GREEN +
-                "--------------------------------------------------------------------------------------------------------------------------------------------" +
-                "\nChoose action:\n" + Actions.ANSI_RESET +
-                "    1)  View production details                             6)  Add/Delete user\n" +
-                "    2)  View actors details                                 7)  Add/Delete actor/production from system\n" +
-                "    3)  View notifications                                  8)  Update actor/production details\n" +
-                "    4)  Search database                                     9)  Solve a request\n" +
-                "    5)  View/Modify favorites list                          10) Logout\n";
         int option = 0;
-
         while (option != 10) {
+            String notifications;
+            if (loggedAdmin.getNotifications().isEmpty())
+                notifications = Actions.ANSI_BOLD + "No new notifications" + Actions.ANSI_RESET;
+            else
+                notifications = Actions.ANSI_BOLD + loggedAdmin.getNotifications().size() +" new notifications" + Actions.ANSI_RESET;
+            String menuText = Actions.ANSI_LIGHT_GREEN +
+                    "--------------------------------------------------------------------------------------------------------------------------------------------" +
+                    "\nNotifications : " + notifications +
+                    "\nChoose action:\n" + Actions.ANSI_RESET +
+                    "    1)  View production details                             6)  Add/Delete user\n" +
+                    "    2)  View actors details                                 7)  Add/Delete actor/production from system\n" +
+                    "    3)  View notifications                                  8)  Update actor/production details\n" +
+                    "    4)  Search database                                     9)  Solve a request\n" +
+                    "    5)  View/Modify favorites list                          10) Logout\n";
             System.out.print(menuText + "\nType action number: ");
             try {
                 option = IMDB.in.nextInt();
@@ -145,17 +150,22 @@ public class IMDB {
 
     }
     private void runContributorMode(Contributor loggedContributor) throws InvalidCommandException {
-        String menuText = Actions.ANSI_LIGHT_GREEN +
-                "--------------------------------------------------------------------------------------------------------------------------------------------" +
-                "\nChoose action:\n" + Actions.ANSI_RESET +
-                "    1)  View production details                             6)  Push/Pull request\n" +
-                "    2)  View actors details                                 7)  Add/Delete actor/production from system\n" +
-                "    3)  View notifications                                  8)  Update actor/production details\n" +
-                "    4)  Search database                                     9)  Solve a request\n" +
-                "    5)  View/Modify favorites list                          10) Logout\n";
         int option = 0;
-
         while (option != 10) {
+            String notifications;
+            if (loggedContributor.getNotifications().isEmpty())
+                notifications = Actions.ANSI_BOLD + "No new notifications" + Actions.ANSI_RESET;
+            else
+                notifications = Actions.ANSI_BOLD + loggedContributor.getNotifications().size() +" new notifications" + Actions.ANSI_RESET;
+            String menuText = Actions.ANSI_LIGHT_GREEN +
+                    "--------------------------------------------------------------------------------------------------------------------------------------------" +
+                    "\nNotifications : " + notifications +
+                    "\nChoose action:\n" + Actions.ANSI_RESET +
+                    "    1)  View production details                             6)  Push/Pull request\n" +
+                    "    2)  View actors details                                 7)  Add/Delete actor/production from system\n" +
+                    "    3)  View notifications                                  8)  Update actor/production details\n" +
+                    "    4)  Search database                                     9)  Solve a request\n" +
+                    "    5)  View/Modify favorites list                          10) Logout\n";
             System.out.print(menuText + "\nType action number: ");
             try {
                 option = IMDB.in.nextInt();
@@ -178,13 +188,13 @@ public class IMDB {
                         Actions.viewNotifications(loggedContributor); break;
                     }
                     case 4: {
-                        Actions.search();
+                        Actions.search(); break;
                     }
                     case 5: {
                         Actions.modifyFavoritesList(loggedContributor); break;
                     }
                     case 6: {
-//                        Actions.modifyRequestsList(loggedContributor); break; // TODO modifyRequestsList()
+                        Actions.modifyRequestsList(loggedContributor); break;
                     }
                     case  7: {
                         Actions.modifyPagesList(loggedContributor); break;
@@ -201,17 +211,22 @@ public class IMDB {
         System.out.println(Actions.ANSI_LIGHT_GREEN + "\nLogging out..." + Actions.ANSI_RESET);
     }
     private void runRegularMode(Regular loggedRegular) throws InvalidCommandException {
-        String menuText = Actions.ANSI_LIGHT_GREEN +
-                "--------------------------------------------------------------------------------------------------------------------------------------------" +
-                "\nChoose action:\n" + Actions.ANSI_RESET +
-                "    1)  View production details                             6)  Push/Pull request\n" +
-                "    2)  View actors details                                 7)  Add/Delete rating\n" +
-                "    3)  View notifications                                  8)  Logout\n" +
-                "    4)  Search database\n" +
-                "    5)  Add/Delete actor/production to/from favorites\n";
         int option = 0;
-
         while (option != 8) {
+            String notifications;
+            if (loggedRegular.getNotifications().isEmpty())
+                notifications = Actions.ANSI_BOLD + "No new notifications" + Actions.ANSI_RESET;
+            else
+                notifications = Actions.ANSI_BOLD + loggedRegular.getNotifications().size() +" new notifications" + Actions.ANSI_RESET;
+            String menuText = Actions.ANSI_LIGHT_GREEN +
+                    "--------------------------------------------------------------------------------------------------------------------------------------------" +
+                    "\nNotifications : " + notifications +
+                    "\nChoose action:\n" + Actions.ANSI_RESET +
+                    "    1)  View production details                             6)  Push/Pull request\n" +
+                    "    2)  View actors details                                 7)  Add/Delete rating\n" +
+                    "    3)  View notifications                                  8)  Logout\n" +
+                    "    4)  Search database\n" +
+                    "    5)  Add/Delete actor/production to/from favorites\n";
             System.out.print(menuText + "\nType action number: ");
             try {
                 option = IMDB.in.nextInt();
@@ -234,16 +249,16 @@ public class IMDB {
                         Actions.viewNotifications(loggedRegular); break;
                     }
                     case 4: {
-                        Actions.search();
+                        Actions.search(); break;
                     }
                     case 5: {
                         Actions.modifyFavoritesList(loggedRegular); break;
                     }
                     case 6: {
-//                        Actions.modifyRequestsList(loggedRegular); break; // TODO modifyRequestsList()
+                        Actions.modifyRequestsList(loggedRegular); break;
                     }
                     case  7: {
-//                        Actions.modifyRatingsList(); break; // TODO modifyRatingsList()
+                        Actions.modifyRatingsList(loggedRegular); break;
                     }
                 }
             }

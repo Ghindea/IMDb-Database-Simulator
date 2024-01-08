@@ -393,6 +393,7 @@ public class Actions {
                     System.out.print("Type option : ");
                     String detailsOption = IMDB.in.nextLine();
                     if (detailsOption.equalsIgnoreCase("save")) {
+                        prod.addObserver(loggedStaff);
                         loggedStaff.addProductionSystem(prod);
                         System.out.println(prod.getType() + " page was created succesfully!");
                         break;
@@ -505,6 +506,7 @@ public class Actions {
                                        "\nType option: ");
                     String detailsOption = IMDB.in.nextLine();
                     if (detailsOption.equalsIgnoreCase("save")) {
+                        newActor.addObserver(loggedStaff);
                         loggedStaff.addActorSystem(newActor);
                         System.out.println("Actor page was created succesfully!");
                         break;
@@ -750,6 +752,230 @@ public class Actions {
         } else {
             System.out.println(PageDoesntExistException.message);
         }
+    }
+    public static void modifyRatingsList(Regular loggedRegular) {
+        System.out.println(ANSI_BOLD + ANSI_LIGHT_GREEN +
+                "----------------------------------------------------------------------" +
+                "\nDO YOU WANT TO ADD [A] OR TO DELETE [D] A RATING?\n" +
+                "----------------------------------------------------------------------" +
+                ANSI_RESET);
+        System.out.print("Type option: ");
+        String option = IMDB.in.nextLine();
+        switch (option.toLowerCase()) {
+            case "a", "add" -> {
+                while (true) {
+                    try {
+                        addRating(loggedRegular);
+                        break;
+                    } catch (InvalidOptionException e) {
+                        IMDB.in.nextLine();
+                        System.out.println(e.getMessage());
+                    }
+                }
+            }
+            case "d", "delete" -> deleteRating(loggedRegular);
+        }
+    }
+    private static void addRating(Regular loggedRegular) throws InvalidOptionException {
+        System.out.println(ANSI_BOLD + ANSI_LIGHT_GREEN +
+                "\nSELECT A PRODUCTION TO RATE\n" +
+                "----------------------------------------------------------------------" +
+                ANSI_RESET);
+        while (true) {
+            System.out.print("Type production's title : ");
+            String title = IMDB.in.nextLine();
+            Production p = IMDB.getInstance().getProduction(title);
+            if (p != null) {
+                System.out.print("Type comment : ");
+                String comment = IMDB.in.nextLine();
+                int rating = 0;
+                while (true) {
+                    System.out.print("Type rating value [" +
+                            ANSI_YELLOW + "1★" + ANSI_RESET + " -> " + ANSI_YELLOW + "10★" + ANSI_RESET +"] : ");
+                    try {
+                        rating = IMDB.in.nextInt();
+                        IMDB.in.nextLine();
+                        if (rating > 10 || rating < 1)
+                            throw new InvalidOptionException();
+                        break;
+                    } catch (InputMismatchException | InvalidOptionException e) {
+                        throw new InvalidOptionException();
+                    }
+                }
+                Rating r = new Rating().setUserName(loggedRegular.getUserName())
+                        .setRating(rating)
+                        .setComment(comment);
+                loggedRegular.addRating(p,r);
+                System.out.println("Rating added successfully!");
+                break;
+            } else {
+                System.out.println(PageDoesntExistException.message);
+            }
+        }
+    }
+    private static void deleteRating(Regular loggedRegular) {
+        System.out.println(ANSI_BOLD + ANSI_LIGHT_GREEN +
+                "\nSELECT A PRODUCTION TO DELETE ITS RATING\n" +
+                "----------------------------------------------------------------------" +
+                ANSI_RESET);
+        while (true) {
+            System.out.print("Type production's title : ");
+            String title = IMDB.in.nextLine();
+            Production p = IMDB.getInstance().getProduction(title);
+            boolean ok = false;
+            if (p != null) {
+                if (loggedRegular.deleteRating(p))
+                    System.out.println("Rating deleted successfully!");
+                else
+                    System.out.println("You haven't rated " + p.getTitle());
+                break;
+            } else {
+                System.out.println(PageDoesntExistException.message);
+            }
+        }
+
+    }
+    public static void modifyRequestsList(User loggedUser) {
+        System.out.println(ANSI_BOLD + ANSI_LIGHT_GREEN +
+                "----------------------------------------------------------------------" +
+                "\nDO YOU WANT TO ADD [A] OR TO DELETE [D] A REQUEST?\n" +
+                "----------------------------------------------------------------------" +
+                ANSI_RESET);
+        System.out.print("Type option: ");
+        String option = IMDB.in.nextLine();
+        switch (option.toLowerCase()) {
+            case "a", "add" -> addRequest(loggedUser);
+            case "d", "delete" -> deleteRequest(loggedUser);
+        }
+    }
+    private static void addRequest(User loggedUser) {
+        System.out.println("\n" + ANSI_UNDERLINE + ANSI_BOLD + ANSI_LIGHT_GREEN +
+                "CREATE REQUEST" + ANSI_RESET);
+        String confirm = "";
+        while (!confirm.equalsIgnoreCase("confirm")) {
+            System.out.println("Choose a request type: " + Arrays.toString(RequestType.values()));
+            String option = IMDB.in.nextLine();
+            switch (option.toLowerCase()) {
+                case "delete_account", "delete", "del" -> {
+                    System.out.print("Request description: ");
+                    String description = IMDB.in.nextLine();
+                    System.out.print(ANSI_LIGHT_RED + "Are you sure you want to delete your own account? [Y]/[N] " + ANSI_RESET);
+                    String idk = IMDB.in.nextLine();
+                    if (idk.equalsIgnoreCase("y")) {
+                        Request r = new Request().setType(RequestType.DELETE_ACCOUNT)
+                                                 .setRequestDate(LocalDateTime.now())
+                                                 .setToUser("ADMIN")
+                                                 .setFromUserName(loggedUser.getUserName())
+                                                 .setDescription(description);
+                        System.out.print("Type CONFIRM to delete your account :");
+                        confirm = IMDB.in.nextLine();
+                        if (confirm.equalsIgnoreCase("confirm")) {
+                            ((RequestManager) loggedUser).createRequest(r);
+                            System.out.println("Request created succesfully!");
+                        }
+                    }
+                }
+                case "other", "others" -> {
+                    System.out.print("Request description: ");
+                    String description = IMDB.in.nextLine();
+                    Request r = new Request().setType(RequestType.OTHERS)
+                                            .setRequestDate(LocalDateTime.now())
+                                            .setToUser("ADMIN")
+                                            .setFromUserName(loggedUser.getUserName())
+                                            .setDescription(description);
+                    System.out.print("Type CONFIRM to create request :");
+                    confirm = IMDB.in.nextLine();
+                    if (confirm.equalsIgnoreCase("confirm")) {
+                        ((RequestManager) loggedUser).createRequest(r);
+                        System.out.println("Request created succesfully!");
+                    }
+                }
+                case "movie", "movie_issue", "series", "series_issue" -> {
+                    System.out.print("Productions's title : ");
+                    String title = IMDB.in.nextLine();
+                    Production production = IMDB.getInstance().getProduction(title);
+                    if (production != null) {
+                        System.out.print("Request description: ");
+                        String description = IMDB.in.nextLine();
+                        Request r = new Request().setRequestDate(LocalDateTime.now())
+                                .setFromUserName(loggedUser.getUserName())
+                                .setDescription(description)
+                                .setTitle(production.getTitle())
+                                .setToUser("staff");
+                        if (production.getType().equals("Movie"))
+                            r.setType(RequestType.MOVIE_ISSUE);
+                        else
+                            r.setType(RequestType.SERIES_ISSUE);
+
+                        System.out.print("Type CONFIRM to create request :");
+                        confirm = IMDB.in.nextLine();
+                        if (confirm.equalsIgnoreCase("confirm")) {
+                            ((RequestManager) loggedUser).createRequest(r);
+                            System.out.println("Request created succesfully!");
+                        }
+                    } else {
+                        System.out.println(PageDoesntExistException.message);
+                    }
+                }
+                case "actor", "actor_issue" -> {
+                    System.out.print("Actor's name : ");
+                    String name = IMDB.in.nextLine();
+                    Actor actor = IMDB.getInstance().getActor(name);
+                    if (actor != null) {
+                        System.out.print("Request description: ");
+                        String description = IMDB.in.nextLine();
+                        Request r = new Request().setRequestDate(LocalDateTime.now())
+                                .setType(RequestType.ACTOR_ISSUE)
+                                .setFromUserName(loggedUser.getUserName())
+                                .setDescription(description)
+                                .setTitle(actor.getName())
+                                .setToUser("staff");
+
+                        System.out.print("Type CONFIRM to create request :");
+                        confirm = IMDB.in.nextLine();
+                        if (confirm.equalsIgnoreCase("confirm")) {
+                            ((RequestManager) loggedUser).createRequest(r);
+                            System.out.println("Request created succesfully!");
+                        }
+                    } else {
+                        System.out.println(PageDoesntExistException.message);
+                    }
+                }
+                default -> System.out.println(InvalidOptionException.message);
+            }
+        }
+    }
+    private static void deleteRequest(User loggedUser) {
+        System.out.println("\n" + ANSI_UNDERLINE + ANSI_BOLD + ANSI_LIGHT_GREEN +
+                "DELETE REQUEST" + ANSI_RESET);
+        List<Request> ownedRequests = loggedUser.ownedRequests();
+        if (!ownedRequests.isEmpty()) {
+            System.out.println("Type done when you are done =)");
+            while (true) {
+                ownedRequests = loggedUser.ownedRequests();
+                System.out.println("Your requests: ");
+                for (Request r : ownedRequests) {
+                    System.out.println("\t" + ownedRequests.indexOf(r) + ") " + r.getType() + " : " + r.getDescription() + " at " + r.getRequestDate().format(Parser.dateTimeFormat));
+                }
+                System.out.println("Choose request number to delete : ");
+                String done = IMDB.in.nextLine();
+                if (done.equalsIgnoreCase("done"))
+                    break;
+                if (ownedRequests.isEmpty()) {
+                    System.out.println("You don't have any requests!");
+                    break;
+                }
+                if (RequestHolder.requestsForAdmins.contains(ownedRequests.get(Integer.parseInt(done))))
+                    ((RequestManager) loggedUser).removeRequest(ownedRequests.get(Integer.parseInt(done)));
+                if (RequestHolder.globalRequests.contains(ownedRequests.get(Integer.parseInt(done))))
+                    ((RequestManager) loggedUser).removeRequest(ownedRequests.get(Integer.parseInt(done)));
+                System.out.println("Request removed");
+            }
+
+        } else {
+            System.out.println("You don't have any requests!");
+        }
+
     }
     public static void clearScreen() {
 //        try {
