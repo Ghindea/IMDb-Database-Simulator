@@ -24,5 +24,4 @@ public class Contributor extends Staff implements RequestManager{
     public void removeRequest(Request r) {
         RequestHolder.pullRequest(r);
     }
-    // TODO this
 }

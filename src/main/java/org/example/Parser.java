@@ -26,7 +26,8 @@ public class Parser {
         requests
     }
     public static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd"),
-            dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+            dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"),
+            dateTimeSecondsFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     private static String pathAccounts     = "src/main/resources/input/accounts.json";
     private static String pathActors       = "src/main/resources/input/actors.json";
     private static String pathProductions  = "src/main/resources/input/production.json";
@@ -35,7 +36,12 @@ public class Parser {
     //endregion
     //region parse memory to JSON files
     public static void parseDatabaseToJSONs() {
-        parseMemory(pathTest, parseType.productions);
+
+        parseMemory(pathAccounts, parseType.accounts);
+        parseMemory(pathActors, parseType.actors);
+        parseMemory(pathProductions, parseType.productions);
+        parseMemory(pathRequests, parseType.requests);
+
     }
     private static void parseMemory(String path, parseType type) {
         JSONArray jsonArray = new JSONArray();
@@ -153,7 +159,10 @@ public class Parser {
     }
     private static JSONArray parseIMDBRequestsList() {
         JSONArray jsonArray = new JSONArray();
-        for (Request r : IMDB.getInstance().getRequests()) {
+        ArrayList<Request> requests = new ArrayList<>();
+        requests.addAll(RequestHolder.globalRequests);
+        requests.addAll(RequestHolder.requestsForAdmins);
+        for (Request r : requests) {
             JSONObject jRequest = new JSONObject();
             jRequest.put("type", r.getType().toString());
             jRequest.put("createdDate", r.getRequestDate().toString());
@@ -340,7 +349,7 @@ public class Parser {
                 .setDescription((String) jReq.get("description"))
                 .setFromUserName((String) jReq.get("username"))
                 .setToUser((String) jReq.get("to"))
-                .setRequestDate(LocalDateTime.parse((String) jReq.get("createdDate"), dateTimeFormat));
+                .setRequestDate(LocalDateTime.parse((String) jReq.get("createdDate"), dateTimeSecondsFormat));
 
         if (req.getType().equals(RequestType.ACTOR_ISSUE))
             req.setTitle((String) jReq.get("actorName"));
@@ -422,12 +431,6 @@ public class Parser {
             IMDB.getInstance().getContributors().add((Contributor) user);
         else if (user instanceof Regular)
             IMDB.getInstance().getRegulars().add((Regular) user);
-
-        try (FileWriter out =  new FileWriter("src/main/java/org/database/used_user_names.txt", true)) {
-            out.write((String) jUser.get("username") + "\n");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
     private static void parseActor(JSONObject jActor) {
         Actor actor = new Actor();
@@ -445,6 +448,34 @@ public class Parser {
     //endregion
     //region solve discrepancies
     public static void solveDiscrepancies() {
+        for (Actor a : IMDB.getInstance().getActors()) {
+            for (Actor.Performance performance : a.getPerformances()) {
+                if (IMDB.getInstance().containsProductionTitle(performance.getTitle()) == null) {
+                    IMDB.getInstance().addProduction(performance.getTitle(), performance.getType());
+
+                    Request request = new Request().setRequestDate(LocalDateTime.now())
+                            .setToUser("ADMIN")
+                            .setFromUserName("System")
+                            .setDescription("Edit " + performance.getType() + " page for " + performance.getTitle())
+                            .setType(RequestType.OTHERS);
+                    new Contributor().createRequest(request);
+                }
+            }
+        }
+        for (Production p : IMDB.getInstance().getProductions()) {
+            for (String actor : p.getActorsNames()) {
+                if (IMDB.getInstance().containsActorName(actor) == null) {
+                    IMDB.getInstance().addActor(actor);
+
+                    Request request = new Request().setRequestDate(LocalDateTime.now())
+                            .setToUser("ADMIN")
+                            .setFromUserName("System")
+                            .setDescription("Edit Actor page for " + actor)
+                            .setType(RequestType.OTHERS);
+                    new Contributor().createRequest(request);
+                }
+            }
+        }
         for (User u : IMDB.getInstance().getUsers()) {
             if (u instanceof Staff && !((Staff) u).getContributions().isEmpty()) {
                 for (String contribution : ((Staff) u).getContributions()) {

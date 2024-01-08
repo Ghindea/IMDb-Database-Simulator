@@ -8,16 +8,16 @@ import java.time.Period;
 import java.util.*;
 
 public class Actions {
+    // ANSI escape code to reset formatting
+    public static String ANSI_RESET = "\u001B[0m";
     // ANSI escape code for bold text
     public static String ANSI_BOLD = "\u001B[1m";
+    // ANSI escape code for underlined text
+    public static String ANSI_UNDERLINE = "\u001B[4m";
     // ANSI escape code for light green text
     public static String ANSI_LIGHT_GREEN = "\u001B[92m";
     // ANSI escape code for orange text (this may vary based on the terminal)
     public static String ANSI_ORANGE = "\u001B[38;5;208m";
-    // ANSI escape code to reset formatting
-    public static String ANSI_RESET = "\u001B[0m";
-    // ANSI escape code for underlined text
-    public static String ANSI_UNDERLINE = "\u001B[4m";
     // ANSI escape code for yellow text
     public static String ANSI_YELLOW = "\u001B[33m";
     // ANSI escape code for light blue text
@@ -26,6 +26,8 @@ public class Actions {
     public static String ANSI_LIGHT_PINK = "\u001B[95m";
     // ANSI escape code for light red text
     public static String ANSI_LIGHT_RED = "\u001B[91m";
+    // ANSI escape code for bright cyan text
+    public static String ANSI_BRIGHT_CYAN = "\033[1;36m";
     public static void displayProductions() {
 
         System.out.println(ANSI_BOLD + ANSI_LIGHT_GREEN +
@@ -974,6 +976,83 @@ public class Actions {
 
         } else {
             System.out.println("You don't have any requests!");
+        }
+
+    }
+    public static void solveRequests(User loggedUser) {
+        System.out.println(ANSI_BOLD + ANSI_LIGHT_GREEN +
+                "----------------------------------------------------------------------" +
+                "\nREQUESTS AVAILABLE FOR YOU:\n" +
+                "----------------------------------------------------------------------" +
+                ANSI_RESET);
+        List<Request> ownedRequests = new ArrayList<>();
+        while (true) {
+            ownedRequests.clear();
+            for (Request r : RequestHolder.globalRequests) {
+                if (r.getToUser().equals(loggedUser.getUserName()) ||
+                        r.getToUser().equalsIgnoreCase("Staff") && loggedUser instanceof Staff)
+                    ownedRequests.add(r);
+            }
+            if (loggedUser instanceof Admin) {
+                ownedRequests.addAll(RequestHolder.requestsForAdmins);
+            }
+            System.out.println("Your requests : ");
+            for (Request r : ownedRequests) {
+                r.displayInfo(ownedRequests.indexOf(r));
+                System.out.println();
+            }
+            if (!ownedRequests.isEmpty()) {
+                System.out.print("Choose request index to solve :");
+                String rIndex = IMDB.in.nextLine();
+                if (rIndex.equalsIgnoreCase("exit") || rIndex.equalsIgnoreCase("done"))
+                    break;
+                int index = Integer.parseInt(rIndex);
+                if (index < ownedRequests.size()) {
+                    Request request = ownedRequests.get(index);
+                    if (request != null) {
+                        request.displayInfo(index);
+                        System.out.println();
+                        System.out.println("|Mark as accepted| |Mark as rejected|");
+                        System.out.print("Type option : ");
+                        String option = IMDB.in.nextLine();
+
+                        String message;
+                        if (request.getTitle() != null) {
+                            message = "\t↪ " + index + ") " + Actions.ANSI_BRIGHT_CYAN + request.getType() + Actions.ANSI_RESET +
+                                    " from " + request.getFromUserName() +
+                                    " : " + request.getTitle() + " ⇒ \"" + Actions.ANSI_LIGHT_GREEN + request.getDescription() + Actions.ANSI_RESET +"\" at " + request.getRequestDate();
+                        }
+                        else {
+                            message = "\t↪ " + index + ") " + Actions.ANSI_BRIGHT_CYAN + request.getType() +Actions.ANSI_RESET
+                                    + " from " + request.getFromUserName() +
+                                    " ⇒ \"" + Actions.ANSI_LIGHT_GREEN + request.getDescription() + Actions.ANSI_RESET + "\" at " + request.getRequestDate();
+                        }
+                        switch (option.toLowerCase()) {
+                            case "accept", "accepted", "accept request", "mark as accepted" -> {
+                                RequestHolder.globalRequests.remove(request);
+                                RequestHolder.requestsForAdmins.remove(request);
+                                request.notify("Request" + message + " was accepted");
+                                User u = IMDB.getInstance().getUser(request.getFromUserName());
+                                if (u != null) {
+                                    u.setUserXP(u.getUserXP() + 5);
+                                }
+                                System.out.println("\nRequest accepted!");
+                            }
+                            case "reject", "rejected", "reject reques", "mark as rejected" -> {
+                                RequestHolder.globalRequests.remove(request);
+                                RequestHolder.requestsForAdmins.remove(request);
+                                request.notify("Request" + message + " was rejected");
+                                System.out.println("\nRequest rejected!");
+                            }
+                        }
+                    }
+                } else {
+                    System.out.println(InvalidOptionException.message);
+                }
+            } else {
+                System.out.println("You don't have requests!");
+                break;
+            }
         }
 
     }

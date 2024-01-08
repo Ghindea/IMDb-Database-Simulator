@@ -13,7 +13,8 @@ public class RequestHolder {
         else
             globalRequests.add(r);
 
-        r.notify("User " + r.getFromUserName() + " pushed a new request at " + r.getRequestDate().format(Parser.dateTimeFormat));
+        r.notify(r.getFromUserName() + " pushed a new request at " + r.getRequestDate().format(Parser.dateTimeFormat) + " ⇒ " +
+                Actions.ANSI_LIGHT_GREEN + r.getDescription() + Actions.ANSI_RESET);
     }
     public static void pullRequest(Request r) {
         if (r.getToUser().equalsIgnoreCase("ADMIN"))

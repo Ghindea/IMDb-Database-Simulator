@@ -156,13 +156,6 @@ public abstract class User implements Observer, Comparable<Object>  {
         }
 
         usedUserNames.add(userName);
-        try {
-            BufferedWriter out = new BufferedWriter(
-                                 new FileWriter("src/main/java/org/database/used_user_names.txt", true));
-            out.write(userName + "\n");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         return userName;
     }
 

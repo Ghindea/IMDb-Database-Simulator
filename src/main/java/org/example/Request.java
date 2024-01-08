@@ -51,4 +51,21 @@ public class Request extends Observable{
     public String getToUser() {
         return toUser;
     }
+
+    public String displayInfo(int index) {
+        if (this.getTitle() != null) {
+            String message = "\t↪ " + index + ") " + Actions.ANSI_BRIGHT_CYAN + this.getType() + Actions.ANSI_RESET +
+                    " from " + this.getFromUserName() +
+                    " : " + this.getTitle() + " ⇒ \"" + Actions.ANSI_LIGHT_GREEN + this.getDescription() + Actions.ANSI_RESET +"\" at " + this.getRequestDate();
+            System.out.print(message);
+            return message;
+        }
+        else {
+            String message = "\t↪ " + index + ") " + Actions.ANSI_BRIGHT_CYAN + this.getType() +Actions.ANSI_RESET
+                    + " from " + this.getFromUserName() +
+                    " ⇒ \"" + Actions.ANSI_LIGHT_GREEN + this.getDescription() + Actions.ANSI_RESET + "\" at " + this.getRequestDate();
+            System.out.print(message);
+            return message;
+        }
+    }
 }

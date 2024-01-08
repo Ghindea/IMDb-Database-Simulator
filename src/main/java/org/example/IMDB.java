@@ -141,7 +141,7 @@ public class IMDB {
                         Actions.modifyPage(loggedAdmin); break;
                     }
                     case 9: {
-//                        Actions.solveRequests(loggedAdmin); break; // TODO solveRequest()
+                        Actions.solveRequests(loggedAdmin); break;
                     }
                 }
             }
@@ -203,7 +203,7 @@ public class IMDB {
                         Actions.modifyPage(loggedContributor); break;
                     }
                     case 9: {
-//                        Actions.solveRequests(loggedAdmin); break; // TODO solveRequest()
+                        Actions.solveRequests(loggedContributor); break;
                     }
                 }
             }
@@ -313,6 +313,13 @@ public class IMDB {
         for (Actor a : actors)
             if (a.containsDataAbout(actor))
                 return a;
+        return null;
+    }
+    public User getUser(String username) {
+        for (User u : getUsers()) {
+            if (u.getUserName().equalsIgnoreCase(username))
+                return u;
+        }
         return null;
     }
     public Production getProduction(String prod) {
