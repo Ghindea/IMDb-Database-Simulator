@@ -18,6 +18,7 @@ import java.util.*;
 * by this program, cuz IDK how to pretty print them... I did my best.
 * */
 public class Parser {
+    //region constans & paths
     private enum parseType {
         accounts,
         actors,
@@ -26,16 +27,17 @@ public class Parser {
     }
     public static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd"),
             dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-    private String pathAccounts     = "src/main/resources/input/accounts.json";
-    private String pathActors       = "src/main/resources/input/actors.json";
-    private String pathProductions  = "src/main/resources/input/production.json";
-    private String pathRequests     = "src/main/resources/input/requests.json";
-    private String pathTest         = "src/main/resources/input/test.json";
-
-    public void parseDatabaseToJSONs() {
+    private static String pathAccounts     = "src/main/resources/input/accounts.json";
+    private static String pathActors       = "src/main/resources/input/actors.json";
+    private static String pathProductions  = "src/main/resources/input/production.json";
+    private static String pathRequests     = "src/main/resources/input/requests.json";
+    private static String pathTest         = "src/main/resources/input/test.json";
+    //endregion
+    //region parse memory to JSON files
+    public static void parseDatabaseToJSONs() {
         parseMemory(pathTest, parseType.productions);
     }
-    private void parseMemory(String path, parseType type) {
+    private static void parseMemory(String path, parseType type) {
         JSONArray jsonArray = new JSONArray();
 
         switch (type) {
@@ -51,7 +53,7 @@ public class Parser {
             System.out.println("Unable to export " + type);
         }
     }
-    private JSONArray parseIMDBActorsList() {
+    private static JSONArray parseIMDBActorsList() {
         JSONArray jsonArray = new JSONArray();
 
         for (Actor a : IMDB.getInstance().getActors()) {
@@ -73,7 +75,7 @@ public class Parser {
 
         return jsonArray;
     }
-    private JSONArray parseIMDBAccountsList() {
+    private static JSONArray parseIMDBAccountsList() {
         JSONArray jsonArray = new JSONArray();
         for (User a : IMDB.getInstance().getUsers()) {
             JSONObject jAccount = new JSONObject();
@@ -149,7 +151,7 @@ public class Parser {
         }
         return jsonArray;
     }
-    private JSONArray parseIMDBRequestsList() {
+    private static JSONArray parseIMDBRequestsList() {
         JSONArray jsonArray = new JSONArray();
         for (Request r : IMDB.getInstance().getRequests()) {
             JSONObject jRequest = new JSONObject();
@@ -171,7 +173,7 @@ public class Parser {
         }
         return jsonArray;
     }
-    private JSONArray parseIMDBProductionsList() {
+    private static JSONArray parseIMDBProductionsList() {
         JSONArray jsonArray = new JSONArray();
         for (Production p : IMDB.getInstance().getProductions()) {
             JSONObject jProduction = new JSONObject();
@@ -229,7 +231,9 @@ public class Parser {
         }
         return jsonArray;
     }
-    public void parseDatabaseToMemory() {
+    //endregion
+    //region parse JSON files to memory
+    public static void parseDatabaseToMemory() {
         parseJSON(pathActors, parseType.actors);
         parseJSON(pathAccounts, parseType.accounts);
         parseJSON(pathRequests, parseType.requests);
@@ -239,7 +243,7 @@ public class Parser {
         FIXME when notifications will be implemented i need to add remaining actors and productions from performances and casts lists
         */
     }
-    private void parseJSON(String path, parseType type) {
+    private static void parseJSON(String path, parseType type) {
         try (FileReader in = new FileReader(path)) {
             JSONParser jp = new JSONParser();
             JSONArray ja = (JSONArray) jp.parse(in);
@@ -262,7 +266,7 @@ public class Parser {
             System.out.println("Unable to import " + type);
         }
     }
-    private void parseProduction(JSONObject jProd) {
+    private static void parseProduction(JSONObject jProd) {
         Iterator<String> iterator;
         ArrayList<String> list;
         Production prod  = ProductionFactory.buildProduction((String) jProd.get("type"));
@@ -330,7 +334,7 @@ public class Parser {
 
         IMDB.getInstance().getProductions().add(prod);
     }
-    private void parseRequest(JSONObject jReq) {
+    private static void parseRequest(JSONObject jReq) {
         Request req = new Request();
         req.setType(RequestType.valueOf((String) jReq.get("type")))
                 .setDescription((String) jReq.get("description"))
@@ -345,7 +349,7 @@ public class Parser {
 
         IMDB.getInstance().getRequests().add(req);
     }
-    private void parseAccount(JSONObject jUser) {
+    private static void parseAccount(JSONObject jUser) {
         User user = UserFactory.buildUser(AccountType.valueOf((String) jUser.get("userType")));
         user.setUserName((String) jUser.get("username"))            // username
                 .setUserType(AccountType.valueOf((String) jUser.get("userType")));  // type
@@ -425,7 +429,7 @@ public class Parser {
             throw new RuntimeException(e);
         }
     }
-    private void parseActor(JSONObject jActor) {
+    private static void parseActor(JSONObject jActor) {
         Actor actor = new Actor();
         actor.setName((String) jActor.get("name"));
         actor.setBiography((String) jActor.get("biography"));
@@ -438,4 +442,15 @@ public class Parser {
         }
         IMDB.getInstance().getActors().add(actor);
     }
+    //endregion
+    //region solve discrepancies
+    public static void solveDiscrepancies() {
+        for (User u : IMDB.getInstance().getUsers()) {
+            if (u instanceof Staff && !((Staff) u).getContributions().isEmpty()) {
+                
+            }
+        }
+    }
+    //endregion
+
 }

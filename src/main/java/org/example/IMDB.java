@@ -25,8 +25,8 @@ public class IMDB {
         in = new Scanner(System.in);
     }
     public void run() {
-        new Parser().parseDatabaseToMemory();
-
+        Parser.parseDatabaseToMemory();
+        Parser.solveDiscrepancies();
         while (true) {
             Actions.clearScreen();
             System.out.println(Actions.ANSI_ORANGE + Actions.imdbLogo2 + Actions.ANSI_RESET);
@@ -69,7 +69,7 @@ public class IMDB {
                 }
 
             }
-            new Parser().parseDatabaseToJSONs();
+            Parser.parseDatabaseToJSONs();
 
             System.out.println(Actions.ANSI_LIGHT_GREEN + "\nLogin? [Y]/[N]" +Actions.ANSI_RESET);
             System.out.print("Type option ");

@@ -2,7 +2,7 @@ package org.example;
 
 import org.jetbrains.annotations.NotNull;
 
-public class Regular extends User implements RequestManager, Observer{
+public class Regular extends User implements RequestManager{
     Regular(String name, String email, AccountType type) {
         super(name, email, type);
     }
@@ -13,10 +13,6 @@ public class Regular extends User implements RequestManager, Observer{
     }
     @Override
     public void removeRequest(Request r) {
-
-    }
-    @Override
-    public void update(Observable o) {
 
     }
 

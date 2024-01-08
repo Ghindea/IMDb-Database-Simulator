@@ -3,16 +3,19 @@ package org.example;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class Staff extends User implements StaffInterface{
+public abstract class Staff extends User implements StaffInterface{
     private SortedSet<String> contributions;
+    private List<Request> requests;
     Staff(String name, String email, AccountType type) {
         super(name, email, type);
     }
     Staff() {
-        contributions = new TreeSet<String>();
+        contributions   = new TreeSet<>();
+        requests        = new ArrayList<>();
     }
 
     public void setContributions(SortedSet<String> contributions) {

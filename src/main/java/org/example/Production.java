@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Production implements Comparable<Object> {
+public abstract class Production extends Observable implements Comparable<Production> {
     private String title;
     private List<String> directorsNames,actorsNames;
     private List<Genre> genres;
@@ -36,8 +36,8 @@ public abstract class Production implements Comparable<Object> {
         return 0;
     }
     @Override
-    public int compareTo(@NotNull Object o) {
-        return Integer.compare(this.ratings.size(), ((Production) o).ratings.size());
+    public int compareTo(@NotNull Production o) {
+        return Integer.compare(this.ratings.size(), o.ratings.size());
     }
     public Production setTitle(String title) {
         this.title = title;
@@ -71,7 +71,6 @@ public abstract class Production implements Comparable<Object> {
         this.grade = grade;
         return this;
     }
-
     public Production setType(String type) {
         this.type = type;
         return this;
@@ -101,11 +100,9 @@ public abstract class Production implements Comparable<Object> {
     public int getReleaseYear() {
         return releaseYear;
     }
-
     public int getRatingsNumber() {
         return ratings.size();
     }
-
     public String getType() {
         return type;
     }

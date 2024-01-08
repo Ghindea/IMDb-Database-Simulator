@@ -5,13 +5,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Actor implements Comparable<Object>{
+public class Actor extends Observable implements Comparable<Actor>{
     private String name, biography;
     private List<Performance> performances;
 
     @Override
-    public int compareTo(@NotNull Object o) {
-        return name.compareTo(((Actor) o).name);
+    public int compareTo(@NotNull Actor o) {
+        return name.compareTo(o.name);
     }
 
     public class Performance {

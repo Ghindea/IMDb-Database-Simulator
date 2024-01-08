@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public abstract class User implements Comparable<Object>  {
+public abstract class User implements Observer, Comparable<Object>  {
     private static ArrayList<String> usedUserNames = loadUsers();
     private Information userInfo;
     private AccountType userType;
@@ -256,5 +256,10 @@ public abstract class User implements Comparable<Object>  {
                 ", userName='" + userName + '\'' +
                 ", userXP=" + userXP +
                 '}';
+    }
+
+    @Override
+    public void update(String msg) {
+        notifications.add(msg);
     }
 }
