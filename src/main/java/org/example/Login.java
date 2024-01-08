@@ -20,6 +20,7 @@ public class Login {
             System.out.println("User experience : " + Actions.ANSI_BOLD + Actions.ANSI_ORANGE + "∞" + Actions.ANSI_RESET);
         else
             System.out.println("User experience : " + loggedUser.getUserXP());
+        System.out.println("User type : " + Actions.ANSI_YELLOW + loggedUser.getUserType() +Actions.ANSI_RESET);
 
         return loggedUser;
     }

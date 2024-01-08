@@ -37,24 +37,25 @@ public class Parser {
     //region parse memory to JSON files
     public static void parseDatabaseToJSONs() {
 
+        parseMemory(pathRequests, parseType.requests);
         parseMemory(pathAccounts, parseType.accounts);
         parseMemory(pathActors, parseType.actors);
         parseMemory(pathProductions, parseType.productions);
-        parseMemory(pathRequests, parseType.requests);
 
     }
-    private static void parseMemory(String path, parseType type) {
+    private synchronized static void parseMemory(String path, parseType type) {
         JSONArray jsonArray = new JSONArray();
 
         switch (type) {
+            case requests -> {jsonArray = parseIMDBRequestsList();}
             case actors -> {jsonArray = parseIMDBActorsList();}
             case accounts -> {jsonArray = parseIMDBAccountsList();}
             case productions -> {jsonArray = parseIMDBProductionsList();}
-            case requests -> {jsonArray = parseIMDBRequestsList();}
         }
         // Write the array to a JSON file
         try (FileWriter fileWriter = new FileWriter(path)) {
-            JSONValue.writeJSONString(jsonArray, fileWriter);
+//            JSONValue.writeJSONString(jsonArray, fileWriter);
+            fileWriter.write(jsonArray.toJSONString());
         } catch (IOException e) {
             System.out.println("Unable to export " + type);
         }
@@ -165,7 +166,7 @@ public class Parser {
         for (Request r : requests) {
             JSONObject jRequest = new JSONObject();
             jRequest.put("type", r.getType().toString());
-            jRequest.put("createdDate", r.getRequestDate().toString());
+            jRequest.put("createdDate", r.getRequestDate().format(dateTimeSecondsFormat));
             jRequest.put("username", r.getFromUserName());
             jRequest.put("to", r.getToUser());
             jRequest.put("description", r.getDescription());
@@ -177,7 +178,6 @@ public class Parser {
                     jRequest.put("movieTitle", r.getTitle());
             }
             /* maybe i should've saved this field in 2 parameters... */
-
             jsonArray.add(jRequest);
         }
         return jsonArray;
@@ -264,7 +264,9 @@ public class Parser {
                     for (Object o : ja) { parseAccount((JSONObject) o);}
                 }
                 case requests -> {
-                    for (Object o : ja) { parseRequest((JSONObject) o);}
+                    for (Object o : ja) {
+                        parseRequest((JSONObject) o);
+                    }
                 }
                 case productions -> {
                     for (Object o : ja) { parseProduction((JSONObject) o);}
@@ -356,7 +358,7 @@ public class Parser {
         if (req.getType().equals(RequestType.MOVIE_ISSUE))
             req.setTitle((String) jReq.get("movieTitle"));
 
-        IMDB.getInstance().getRequests().add(req);
+        new Contributor().createRequest(req);
     }
     private static void parseAccount(JSONObject jUser) {
         User user = UserFactory.buildUser(AccountType.valueOf((String) jUser.get("userType")));
@@ -454,7 +456,7 @@ public class Parser {
                     IMDB.getInstance().addProduction(performance.getTitle(), performance.getType());
 
                     Request request = new Request().setRequestDate(LocalDateTime.now())
-                            .setToUser("ADMIN")
+                            .setToUser("Staff")
                             .setFromUserName("System")
                             .setDescription("Edit " + performance.getType() + " page for " + performance.getTitle())
                             .setType(RequestType.OTHERS);
@@ -468,7 +470,7 @@ public class Parser {
                     IMDB.getInstance().addActor(actor);
 
                     Request request = new Request().setRequestDate(LocalDateTime.now())
-                            .setToUser("ADMIN")
+                            .setToUser("Staff")
                             .setFromUserName("System")
                             .setDescription("Edit Actor page for " + actor)
                             .setType(RequestType.OTHERS);

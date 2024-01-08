@@ -1036,6 +1036,7 @@ public class Actions {
                                 if (u != null) {
                                     u.setUserXP(u.getUserXP() + 5);
                                 }
+                                loggedUser.setUserXP(loggedUser.getUserXP() + 10);
                                 System.out.println("\nRequest accepted!");
                             }
                             case "reject", "rejected", "reject reques", "mark as rejected" -> {
