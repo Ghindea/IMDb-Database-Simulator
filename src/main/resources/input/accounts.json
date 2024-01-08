@@ -473,7 +473,7 @@
   },
   {
     "username": "daniel_ghindea",
-    "experience": null,
+    "experience": "10",
     "information": {
       "credentials": {
         "email": "dan",
@@ -485,15 +485,7 @@
       "gender": "Male",
       "birthDate": "2003-06-05"
     },
-    "userType": "Admin",
-    "productionsContribution": [
-      "Bahoi sare de pe pod",
-      "Vasile Versaci, cel mai bun pregratar gateste orez cu lapte!"
-    ],
-    "actorsContribution": [
-      "Bahoi",
-      "Vasile Versaci"
-    ]
+    "userType": "Regular"
   },
   {
     "username": "testRegular",
