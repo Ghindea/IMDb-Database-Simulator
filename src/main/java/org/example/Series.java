@@ -67,6 +67,7 @@ public class Series extends Production{
 
         System.out.println();
         System.out.println("User reviews:");
+        super.getRatings().sort(Rating::compareTo);
         for (Rating r : super.getRatings()) {
             System.out.println(Actions.ANSI_LIGHT_GREEN + r.getUserName() +
                     Actions.ANSI_YELLOW + "    ★" + r.getRating() + Actions.ANSI_RESET);
