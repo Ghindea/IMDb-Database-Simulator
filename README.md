@@ -11,7 +11,7 @@
 </div>
 
 # **IMDB database simulator**
-
+by: [Daniel Ghindea](https://github.com/Ghindea)
 ### Dependencies
 This program uses JSON.simple toolkit to save database elements in JSON files. To compile code in IntelliJ add JSON.simple dependency as it follows:
 
@@ -19,6 +19,10 @@ This program uses JSON.simple toolkit to save database elements in JSON files. T
 
 ### Description
 This Java program simulates simple functionalities of IMDb in a CLI environment, using OOP concepts, JSON files and Design Pattern principles. 
+
+### Upcoming update
+GUI environment created with SWING package is on its way.
+
 ### How it works
 - Tester.java is the class that contains `main()` method. Run it to launch program.
 - `IMDB` is the main class of the program. It is a singleton class that contains arrays that store `Production`, `User`, `Actor` objects. It also has 'run()' method that runs the program.
