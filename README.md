@@ -11,7 +11,7 @@
 </div>
 
 # **IMDB database simulator**
-by: [Daniel Ghindea](https://github.com/Ghindea)
+by [Daniel Ghindea](https://github.com/Ghindea)
 ### Dependencies
 This program uses JSON.simple toolkit to save database elements in JSON files. To compile code in IntelliJ add JSON.simple dependency as it follows:
 
